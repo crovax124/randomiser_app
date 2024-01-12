@@ -78,6 +78,7 @@ jobs:
         with:
           name: windows-exe
           path: ./build/windows/x64/runner/Release/randomiser_app.exe
+
   create_release:
     needs: [build_android, build_ios, build_macos, build_windows]
     runs-on: ubuntu-latest
@@ -137,3 +138,44 @@ jobs:
           asset_path: ./windows-exe/randomiser_app.exe
           asset_name: randomiser_app_Windows_${{ github.run_number }}.exe
           asset_content_type: application/octet-stream
+
+  publish_release:
+    needs: [build_android, build_ios, build_macos, build_windows]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout public repository
+        uses: actions/checkout@v2
+        with:
+          repository: crovax124/randomiser
+          token: ${{ secrets.MY_PUBLIC_REPO_TOKEN }}
+          path: public-repo
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v2
+
+      - name: Copy artifacts to public repository
+        run: |
+          cp android-apk/app-release.apk public-repo/android-${{ github.run_number }}.apk
+          cp ios-ipa/Runner.ipa public-repo/ios-${{ github.run_number }}.ipa
+          cp macos-dmg/randomiser_app_macOS_${{ github.run_number }}.dmg public-repo/macos-${{ github.run_number }}.dmg
+          cp windows-exe/randomiser_app.exe public-repo/windows-${{ github.run_number }}.exe
+
+      - name: Commit and push to public repository
+        run: |
+          cd public-repo
+          git config user.name 'github-actions'
+          git config user.email 'github-actions@github.com'
+          git add .
+          git commit -m 'Release ${{ github.run_number }}'
+          git push
+
+      - name: Create Release in Public Repository
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_PUBLIC_REPO_TOKEN }}
+        with:
+          tag_name: release-${{ github.run_number }}
+          release_name: Unified Release ${{ github.run_number }}
+          draft: false
+          prerelease: false
+          body: 'Release of Android, iOS, macOS, and Windows builds for version ${{ github.run_number }}'
