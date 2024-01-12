@@ -140,7 +140,7 @@ jobs:
           asset_content_type: application/octet-stream
 
   publish_release:
-    needs: [build_android, build_ios, build_macos, build_windows]
+    needs: [create_release]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout public repository
