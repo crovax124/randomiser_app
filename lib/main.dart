@@ -20,8 +20,17 @@ class MyApp extends StatelessWidget {
       ),
       child: MaterialApp.router(
         title: 'Patient Randomiser',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
+        theme: ThemeData.from(
+          colorScheme: const ColorScheme.light(
+            primary: Color(0xFF1D3557),
+            secondary: Color(0xFF457B9D),
+            background: Color(0xFFF1FAEE),
+            surface: Color(0xFFF1FAEE),
+            onPrimary: Color(0xFFF1FAEE),
+            onSecondary: Color(0xFFF1FAEE),
+            onBackground: Color(0xFF1D3557),
+            onSurface: Color(0xFF1D3557),
+          ),
         ),
         routerConfig: getIt<AppRouter>().config(),
         builder: (context, child) {

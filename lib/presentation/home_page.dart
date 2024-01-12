@@ -74,54 +74,50 @@ class HomePage extends StatelessWidget {
               return const Text("No groups available");
             }
             return Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // Adjust the number of columns here
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                ),
-                itemCount: state.groups.length,
-                itemBuilder: (context, i) {
-                  return Card(
-                    elevation: 5,
-                    margin: const EdgeInsets.all(8),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          "Group ${i + 1}".text.bold.makeCentered(),
-                          const SizedBox(height: 30),
-                          Column(
-                            children: [
-                              "Patients in Group:".text.makeCentered(),
-                              state.groups[i].patients.length.text
-                                  .makeCentered(),
-                              const SizedBox(height: 8),
-                              if (state.groups[i].patients.isNotEmpty)
-                                Column(
-                                  children: [
-                                    "Patients in this Group:"
-                                        .text
-                                        .makeCentered(),
-                                    state.groups[i].patients
-                                        .map((patient) => patient.id)
-                                        .join(', ')
-                                        .text
-                                        .make(),
-                                  ],
-                                )
-                              else
-                                const Text("No patients in this group"),
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                },
+                child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, // Adjust the number of columns here
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
               ),
-            );
+              itemCount: state.groups.length,
+              itemBuilder: (context, i) {
+                return Card(
+                  elevation: 5,
+                  margin: const EdgeInsets.all(8),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        "Group ${i + 1}".text.bold.makeCentered(),
+                        const SizedBox(height: 15),
+                        Column(
+                          children: [
+                            "Patients in Group:".text.makeCentered(),
+                            state.groups[i].patients.length.text.makeCentered(),
+                            const SizedBox(height: 8),
+                            if (state.groups[i].patients.isNotEmpty)
+                              Column(
+                                children: [
+                                  "Patients in this Group:".text.makeCentered(),
+                                  state.groups[i].patients
+                                      .map((patient) => patient.id)
+                                      .join(', ')
+                                      .text
+                                      .make(),
+                                ],
+                              )
+                            else
+                              const Text("No patients in this group"),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ).px(20));
           })
         ],
       ),

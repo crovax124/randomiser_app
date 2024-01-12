@@ -29,7 +29,7 @@ class _AddPatientPageState extends State<AddPatientPage> {
             builder: (context, form, child) {
               return Card(
                 elevation: 5,
-                child: Container(
+                child: SizedBox(
                   width: 300,
                   child: Column(
                     children: [
