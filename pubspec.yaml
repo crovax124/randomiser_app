@@ -2,7 +2,7 @@ name: randomiser_app
 description: "A new Flutter project."
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-version: 1.0.0+1
+version: 1.0.1+1
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
@@ -28,6 +28,8 @@ dependencies:
   json_annotation: ^4.8.1
   logger: ^2.0.2+1
   responsive_framework: ^1.1.1
+  icons_launcher: ^2.1.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -38,3 +40,16 @@ dev_dependencies:
   json_serializable: ^6.7.1
 flutter:
   uses-material-design: true
+
+
+icons_launcher:
+  image_path: "assets/favicon.png"
+  platforms:
+    android:
+      enable: true
+    ios:
+      enable: true
+    macos:
+      enable: true
+    windows:
+      enable: true
