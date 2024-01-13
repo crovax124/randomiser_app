@@ -85,6 +85,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -95,23 +96,24 @@ jobs:
           release_name: Release ${{ github.run_number }}
           draft: false
           prerelease: false
+
       - name: Download all artifacts
         uses: actions/download-artifact@v2
-
 
       - name: Upload Android APK
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./android-apk/app-release.apk
           asset_name: randomiser_app_Android_${{ github.run_number }}.apk
           asset_content_type: application/vnd.android.package-archive
+
       - name: Upload iOS IPA
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./ios-ipa/Runner.ipa
@@ -121,7 +123,7 @@ jobs:
       - name: Upload macOS DMG
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./macos-dmg/randomiser_app_macOS_${{ github.run_number }}.dmg
@@ -131,65 +133,12 @@ jobs:
       - name: Upload Windows EXE
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./windows-exe/randomiser_app.exe
           asset_name: randomiser_app_Windows_${{ github.run_number }}.exe
           asset_content_type: application/octet-stream
 
-  publish_release:
-    needs: [create_release]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Upload Release Assets
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            android-apk/app-release.apk
-            ios-ipa/Runner.ipa
-            macos-dmg/randomiser_app_macOS_${{ github.run_number }}.dmg
-            windows-exe/randomiser_app.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
-          RELEASE_REPO: crovax124/randomiser
 
 
-
-  build_web:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.16.5'
-      - name: Install dependencies
-        run: flutter pub get
-      - name: Build Web
-        run: flutter build web
-
-  deploy_web:
-    needs: [ build_web ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.16.5'
-      - name: Install dependencies
-        run: flutter pub get
-      - name: Build Web
-        run: flutter build web
-      - name: Prepare and push to the web-deployment branch
-        env:
-          MY_TOKEN: ${{ secrets.MY_TOKEN }}
-        run: |
-          git config --global user.email "eric.isensee@icloud.com"
-          git config --global user.name "Eric Isensee"
-          git checkout -b web-deployment || git checkout web-deployment
-          rm -rf docs
-          mkdir docs
-          cp -r build/web/* docs/
-          git add docs
-          git commit -m "Deploy web version"
-          git -c http.extraHeader="AUTHORIZATION: basic $(echo -n x-access-token:${MY_TOKEN} | base64)" push -u origin web-deployment
