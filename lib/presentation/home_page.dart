@@ -75,8 +75,14 @@ class HomePage extends StatelessWidget {
             }
             return Expanded(
                 child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // Adjust the number of columns here
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: MediaQuery.of(context).size.width > 1200
+                    ? 5
+                    : MediaQuery.of(context).size.width > 800
+                        ? 4
+                        : MediaQuery.of(context).size.width > 600
+                            ? 3
+                            : 2,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
               ),

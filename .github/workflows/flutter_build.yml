@@ -179,3 +179,33 @@ jobs:
           draft: false
           prerelease: false
           body: 'Release of Android, iOS, macOS, and Windows builds for version ${{ github.run_number }}'
+
+
+  build_web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.5'
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Build Web
+        run: flutter build web
+
+  deploy_web:
+    needs: [build_web]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Copy web build to a different branch
+        run: |
+          git checkout -b web-deployment  # Create and switch to a new branch
+          mkdir -p web
+          cp -r build/web/* web/
+          git add web
+          git commit -m "Deploy web version"
+          git push -u origin web-deployment  # Push the changes to the new branch
+
