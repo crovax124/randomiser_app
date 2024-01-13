@@ -140,46 +140,20 @@ jobs:
           asset_content_type: application/octet-stream
 
   publish_release:
-    needs: [ create_release ]
+    needs: [create_release]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout public repository
-        uses: actions/checkout@v3
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v1
         with:
-          repository: crovax124/randomiser  # Your public repository URL
-          token: ${{ secrets.MY_TOKEN }}
-          path: public-repo
-
-      - name: Download all artifacts
-        uses: actions/download-artifact@v2
-
-      - name: Copy artifacts to public repository
-        run: |
-          mkdir -p public-repo/releases
-          cp android-apk/app-release.apk public-repo/releases/randomiser_app_Android_${{ github.run_number }}.apk
-          cp ios-ipa/Runner.ipa public-repo/releases/randomiser_app_iOS_${{ github.run_number }}.ipa
-          cp macos-dmg/randomiser_app_macOS_${{ github.run_number }}.dmg public-repo/releases/randomiser_app_macOS_${{ github.run_number }}.dmg
-          cp windows-exe/randomiser_app.exe public-repo/releases/randomiser_app_Windows_${{ github.run_number }}.exe
-
-      - name: Commit and push to public repository
-        run: |
-          cd public-repo
-          git config user.name 'github-actions'
-          git config user.email 'github-actions@github.com'
-          git add releases
-          git commit -m 'Release assets for version ${{ github.run_number }}'
-          git push
-
-      - name: Create Release in Public Repository
-        uses: actions/create-release@v1
+          files: |
+            android-apk/app-release.apk
+            ios-ipa/Runner.ipa
+            macos-dmg/randomiser_app_macOS_${{ github.run_number }}.dmg
+            windows-exe/randomiser_app.exe
         env:
           GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
-        with:
-          tag_name: release-${{ github.run_number }}
-          release_name: Unified Release ${{ github.run_number }}
-          draft: false
-          prerelease: false
-          body: 'Release of Android, iOS, macOS, and Windows builds for version ${{ github.run_number }}'
+          RELEASE_REPO: crovax124/randomiser
 
 
 
@@ -201,16 +175,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Debug before copying web build
-        run: |
-          pwd
-          ls -l
+      - name: Build Web
+        run: flutter build web
       - name: Copy web build to a different branch
         run: |
           git checkout -b web-deployment  # Create and switch to a new branch
-          mkdir -p web
-          cp -r build/web/* web/
-          git add web
+          cp -r build/web/* ./
+          git add .
           git commit -m "Deploy web version"
           git push -u origin web-deployment  # Push the changes to the new branch
 
