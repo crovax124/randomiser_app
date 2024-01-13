@@ -89,16 +89,6 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v2
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
-        with:
-          tag_name: unified-${{ github.run_number }}
-          release_name: Unified Release ${{ github.run_number }}
-          draft: false
-          prerelease: false
 
       - name: Upload Android APK
         uses: actions/upload-release-asset@v1
@@ -173,6 +163,9 @@ jobs:
     needs: [build_web]
     runs-on: ubuntu-latest
     steps:
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.5'
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Build Web
