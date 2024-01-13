@@ -199,7 +199,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
+      - name: Debug before copying web build
+        run: |
+          ls -l build
+          ls -l build/web
       - name: Copy web build to a different branch
         run: |
           git checkout -b web-deployment  # Create and switch to a new branch
