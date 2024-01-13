@@ -85,7 +85,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.run_number }}
+          release_name: Release ${{ github.run_number }}
+          draft: false
+          prerelease: false
       - name: Download all artifacts
         uses: actions/download-artifact@v2
 
@@ -160,21 +169,34 @@ jobs:
         run: flutter build web
 
   deploy_web:
-    needs: [build_web]
+    needs: [ build_web ]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.16.5'
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: flutter pub get
       - name: Build Web
         run: flutter build web
-      - name: Copy web build to a different branch
+      - name: Prepare and push to the web-deployment branch
         run: |
-          git checkout -b web-deployment  # Create and switch to a new branch
-          cp -r build/web/* ./
-          git add .
-          git commit -m "Deploy web version"
-          git push -u origin web-deployment  # Push the changes to the new branch
+          # Configure git (replace with your details)
+          git config --global user.email "eric.isensee@icloud.com"
+          git config --global user.name "Eric Isensee"
 
+          # Checkout to a new branch (create if it doesn't exist)
+          git checkout -b web-deployment || git checkout web-deployment
+
+          # Clear out the existing contents of the docs folder (if it exists)
+          rm -rf docs
+          mkdir docs
+
+          # Copy built files to the docs folder
+          cp -r build/web/* docs/
+
+          # Commit and push
+          git add docs
+          git commit -m "Deploy web version"
+          git push -u origin web-deployment
