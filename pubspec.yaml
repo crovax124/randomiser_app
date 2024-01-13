@@ -53,3 +53,5 @@ icons_launcher:
       enable: true
     windows:
       enable: true
+    web:
+      enable: true
